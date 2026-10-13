@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AMC // Anime & Manga Club — NISER</title>
+<style>
+@font-face{font-family:OrbitronLocal;src:local("Orbitron");}
+:root{
+  --bg:#050505;--panel:#0b0b0d;--panel2:#101014;--purple:#8e65c7;
+  --purple2:#5e3f8d;--green:#9be62d;--green2:#5d9e16;--white:#f2f0f5;
+  --muted:#918c9b;--line:#372b49;--danger:#d54a72;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--white);font-family:Arial,Helvetica,sans-serif;
+  overflow-x:hidden;cursor:url("assets/cursor.cur"),auto;
+}
+a,button,[role=button],.clickable,.timeline-card,.core-card{cursor:url("assets/link.cur"),pointer}
+button{font:inherit}
+::selection{background:var(--green);color:#000}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);
+  mix-blend-mode:screen;opacity:.35
+}
+body:after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:998;
+  background:radial-gradient(circle at 50% 25%,transparent 0,transparent 45%,rgba(0,0,0,.62) 100%);
+}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:997;opacity:.05;background-image:url("assets/noise.svg")}
+
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:72px;background:rgba(5,5,5,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(142,101,199,.25);display:flex;align-items:center;
+  justify-content:space-between;padding:0 5vw
+}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:white}
+.brand-mark{width:48px;height:48px;display:grid;place-items:center;overflow:hidden}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block}
+.brand-name{font-size:13px;letter-spacing:4px;font-weight:800}
+.brand-name small{display:block;color:var(--green);font-size:8px;letter-spacing:3px;margin-top:4px}
+nav{display:flex;gap:8px}
+nav a{color:#bbb;text-decoration:none;font-size:10px;letter-spacing:2px;padding:12px 13px;transition:.2s}
+nav a:hover{color:var(--green);background:rgba(155,230,45,.06)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--green);padding:9px}
+
+.hero{
+  min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;
+  padding:100px 5vw 70px;
+  background:
+    linear-gradient(90deg,transparent 49.9%,rgba(142,101,199,.08) 50%,transparent 50.1%),
+    radial-gradient(ellipse at center,rgba(82,51,119,.20),transparent 58%);
+}
+.hero-grid{position:absolute;inset:72px 0 0;background-image:linear-gradient(rgba(142,101,199,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(142,101,199,.08) 1px,transparent 1px);background-size:55px 55px;mask-image:linear-gradient(to bottom,black,transparent 80%);opacity:.45}
+.hero-content{position:relative;text-align:center;max-width:950px}
+.corner{position:absolute;width:120px;height:120px;border-color:var(--green);border-style:solid;opacity:.7}
+.corner.tl{top:-20px;left:-60px;border-width:2px 0 0 2px}.corner.tr{top:-20px;right:-60px;border-width:2px 2px 0 0}
+.corner.bl{bottom:-20px;left:-60px;border-width:0 0 2px 2px}.corner.br{bottom:-20px;right:-60px;border-width:0 2px 2px 0}
+.logo{width:min(420px,75vw);display:block;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(142,101,199,.18))}
+.kicker{color:var(--green);font-size:10px;letter-spacing:6px;font-weight:800;margin:5px 0 20px}
+.hero h1{font-size:clamp(40px,8vw,92px);line-height:.88;letter-spacing:-4px;font-weight:1000;text-transform:uppercase}
+.hero h1 span{color:var(--green);-webkit-text-stroke:1px var(--green)}
+.hero p{max-width:620px;margin:24px auto;color:#9e99a5;font-size:14px;line-height:1.8}
+.cta{display:inline-flex;gap:10px;align-items:center;border:1px solid var(--green);background:var(--green);color:#050505;text-decoration:none;padding:13px 20px;font-size:10px;font-weight:900;letter-spacing:2px;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);transition:.2s}
+.cta:hover{background:#b6ff50;transform:translateY(-2px)}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:#6e6877;font-size:8px;letter-spacing:4px}
+.scroll-hint:after{content:"";display:block;width:1px;height:36px;background:var(--purple);margin:9px auto 0}
+
+section{padding:105px 6vw;position:relative}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:45px}
+.eyebrow{font-size:9px;letter-spacing:4px;color:var(--green);font-weight:900;margin-bottom:9px}
+h2{font-size:clamp(31px,5vw,58px);letter-spacing:-2px;line-height:.9;text-transform:uppercase}
+.section-head p{max-width:430px;color:#77717e;font-size:12px;line-height:1.7}
+
+.bulletin-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
+.bulletin{border:1px solid var(--line);background:linear-gradient(135deg,#0d0c10,#070709);position:relative;overflow:hidden}
+.bulletin:before{content:"BULLETIN // 01";position:absolute;top:12px;right:15px;color:#41384c;font-size:8px;letter-spacing:2px}
+.news-row{display:grid;grid-template-columns:105px 95px 1fr;gap:15px;align-items:center;padding:22px;border-bottom:1px solid #19151f;transition:.2s}
+.news-row:last-child{border-bottom:0}.news-row:hover{background:rgba(142,101,199,.07);padding-left:28px}
+.news-date{font-size:10px;color:#66606c;letter-spacing:1px}.tag{font-size:8px;letter-spacing:2px;color:#050505;background:var(--green);display:inline-block;padding:5px 7px;width:max-content;font-weight:900}
+.news-title{font-size:13px;font-weight:800}.news-title small{display:block;color:#696371;font-size:10px;font-weight:normal;margin-top:5px}
+.status-panel{border:1px solid var(--line);padding:25px;background:#09090b;position:relative}
+.status-panel:before{content:"SYSTEM STATUS";color:var(--green);font-size:8px;letter-spacing:3px}
+.status-num{font-size:58px;font-weight:900;line-height:1;margin:20px 0 8px;color:var(--purple)}
+.status-panel p{color:#77717e;font-size:11px;line-height:1.7}
+.readout{margin-top:30px;border-top:1px solid #211b29;padding-top:17px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.readout div{color:#55505c;font-size:8px;letter-spacing:2px}.readout b{display:block;color:#bbb6c0;font-size:11px;margin-top:5px}
+
+.screening-feature{display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr);gap:45px;align-items:center;border:1px solid var(--line);background:linear-gradient(135deg,#100d14,#070708);padding:30px;position:relative;overflow:hidden}
+.screening-feature:after{content:"NEXT";position:absolute;right:-18px;top:35px;font-size:90px;font-weight:1000;color:rgba(142,101,199,.07);letter-spacing:-6px}
+.poster{width:170px;height:255px;aspect-ratio:auto;background:#111;position:relative;overflow:hidden;border:1px solid #403450;display:grid;place-items:center;color:#625b68}
+.poster img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block}.poster-placeholder{text-align:center;padding:20px;font-size:11px;letter-spacing:2px}
+.feature-meta{position:relative;z-index:1}.feature-meta .date{color:var(--green);font-size:9px;letter-spacing:3px;font-weight:900}
+.feature-meta h3{font-size:clamp(35px,5vw,70px);letter-spacing:-3px;line-height:.9;margin:12px 0}
+.feature-meta .desc{color:#8b8590;max-width:530px;font-size:12px;line-height:1.8}
+.meta-line{display:flex;gap:25px;margin:25px 0;flex-wrap:wrap}.meta-line div{border-left:2px solid var(--purple);padding-left:10px;font-size:8px;color:#625d68;letter-spacing:1px}.meta-line b{display:block;color:#d5d0d9;font-size:12px;margin-top:5px}
+.rating{color:var(--green)!important;font-size:17px!important}
+
+.archive-toggle-wrap{margin-top:24px}
+.archive-toggle{
+  width:100%;min-height:72px;padding:16px 20px;border:1px solid var(--line);
+  background:#09090b;color:var(--white);display:flex;align-items:center;
+  justify-content:space-between;gap:20px;text-align:left;letter-spacing:2px;
+  font-size:10px;font-weight:900;transition:.25s;position:relative;overflow:hidden
+}
+.archive-toggle:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);transition:.25s}
+.archive-toggle:hover{border-color:var(--purple);background:#0d0b10}
+.archive-toggle-icon{width:30px;height:30px;border:1px solid var(--purple);display:grid;place-items:center;color:var(--green);font-size:18px;flex:none}
+.archive-toggle-kicker{display:block;color:#5d5764;font-size:7px;letter-spacing:3px;margin-bottom:5px}
+.archive-toggle-arrow{color:var(--green);font-size:18px;transition:transform .25s}
+.archive-toggle[aria-expanded="true"] .archive-toggle-arrow{transform:rotate(180deg)}
+.archive-toggle[aria-expanded="true"] .archive-toggle-icon{background:var(--green);color:#050505}
+.timeline-wrap{margin-top:35px;position:relative;padding:10px 0 40px}
+.timeline-wrap[hidden]{display:none}
+
+.timeline-line{position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(var(--purple2),var(--green),var(--purple2));transform:translateX(-50%)}
+.timeline-title{text-align:center;margin-bottom:50px;color:#625d68;font-size:9px;letter-spacing:4px}
+.timeline-item{position:relative;width:50%;padding:0 45px 70px}
+.timeline-item.left{left:0;text-align:right}.timeline-item.right{left:50%;text-align:left}
+.timeline-dot{position:absolute;top:26px;width:13px;height:13px;border:2px solid var(--green);background:#050505;transform:rotate(45deg);z-index:2;box-shadow:0 0 0 5px #050505}
+.timeline-item.left .timeline-dot{right:-7px}.timeline-item.right .timeline-dot{left:-7px}
+.timeline-card{display:grid;grid-template-columns:130px 1fr;gap:20px;padding:16px;border:1px solid var(--line);background:#0a0a0c;text-align:left;cursor:pointer;transition:.25s;position:relative}
+.timeline-item.left .timeline-card{direction:ltr}.timeline-card:hover{border-color:var(--purple);transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,0,0,.35)}
+.timeline-card .mini-poster{aspect-ratio:2/3;background:#141219;border:1px solid #30263d;display:grid;place-items:center;color:#655e6c;font-size:8px;text-align:center;overflow:hidden}.timeline-card .mini-poster img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block}
+.timeline-info{padding-top:4px}.timeline-info .year{color:#655e6c;font-size:8px;letter-spacing:2px}.timeline-info h4{font-size:19px;margin:7px 0}.timeline-info p{font-size:9px;color:#77717d;line-height:1.6}.stars{color:var(--green);font-size:11px;margin-top:10px}
+.future .timeline-dot{border-color:var(--green);background:var(--green)}
+.future .timeline-card{border-color:rgba(155,230,45,.35)}
+.future .mini-poster img{filter:grayscale(100%);opacity:.65}
+.future .mini-poster{filter:grayscale(100%);opacity:.72}
+.future-label{font-size:8px;color:var(--green);letter-spacing:2px;margin-bottom:5px;font-weight:900}
+
+.core-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.core-card{background:#0b0b0d;border:1px solid var(--line);padding:10px;cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+.core-card:hover{transform:translateY(-7px);border-color:var(--green)}
+.core-photo{aspect-ratio:4/5;background:linear-gradient(135deg,#1c1624,#09090a);display:grid;place-items:center;position:relative;overflow:hidden}
+.core-photo:before{content:"";position:absolute;inset:12px;border:1px solid rgba(155,230,45,.22);clip-path:polygon(10% 0,90% 0,100% 10%,100% 90%,90% 100%,10% 100%,0 90%,0 10%);z-index:2;pointer-events:none}.core-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.core-initial{font-size:48px;font-weight:900;color:var(--purple);text-shadow:4px 4px 0 #251937}
+.core-info{padding:13px 5px 5px}.core-info h3{font-size:15px}.core-info p{color:var(--green);font-size:8px;letter-spacing:2px;margin-top:5px}
+.core-index{position:absolute;top:14px;right:14px;color:#57505e;font-size:8px;letter-spacing:2px}
+
+.arcade{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.game-card{min-height:220px;border:1px solid var(--line);background:#0b0b0d;padding:25px;position:relative;overflow:hidden;transition:.25s;display:flex;flex-direction:column;justify-content:space-between;color:var(--white);text-decoration:none}
+.game-card:hover{border-color:var(--purple);transform:translateY(-4px)}
+.game-num{font-size:10px;color:var(--green);letter-spacing:3px}.game-card h3{font-size:28px;letter-spacing:-1px;color:var(--white);text-shadow:0 0 12px rgba(142,101,199,.15)}.game-card p{color:#aaa5b0;font-size:10px;line-height:1.6;max-width:260px}
+.game-arrow{align-self:flex-end;font-size:25px;color:var(--purple)}.game-card:after{content:"";position:absolute;right:-50px;bottom:-70px;width:160px;height:160px;border:1px solid rgba(142,101,199,.18);transform:rotate(45deg)}
+
+.manga-recommendations{margin-top:75px;border-top:1px solid #211b29;padding-top:55px}.recommendation-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:28px}.recommendation-head h3{font-size:clamp(28px,4vw,46px);letter-spacing:-2px;line-height:.95;text-transform:uppercase}.recommendation-head p{max-width:430px;color:#77717e;font-size:11px;line-height:1.7}.manga-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.manga-card{min-width:0;border:1px solid var(--line);background:#0b0b0d;text-align:left;text-decoration:none;color:var(--white);display:block;transition:.25s;position:relative;overflow:hidden}.manga-card:hover{border-color:var(--green);transform:translateY(-5px)}
+.manga-cover{height:210px;background:linear-gradient(135deg,#17131e,#080809);display:grid;place-items:center;overflow:hidden;padding:10px}
+.manga-cover img{width:140px;height:195px;max-width:100%;max-height:100%;object-fit:contain;display:block}
+.manga-cover span{font-size:9px;color:#615b68;letter-spacing:2px;text-align:center}
+.manga-info{padding:14px 15px;border-top:1px solid #211b29}.manga-info h4{font-size:16px;margin:0;letter-spacing:.2px}.manga-arrow{position:absolute;right:13px;bottom:11px;color:var(--green);font-size:17px}.anime-recommendations{margin-top:65px}@media(max-width:850px){
+  .screening-feature{grid-template-columns:150px 1fr}
+  .poster{width:130px;height:195px}
+.manga-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.manga-grid{grid-template-columns:repeat(2,1fr)}.recommendation-head{display:block}.recommendation-head p{margin-top:14px}}
+.contact-section{padding-top:80px;padding-bottom:80px}
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.contact-card{
+  min-height:190px;border:1px solid var(--line);background:#0b0b0d;padding:24px;
+  color:var(--white);text-decoration:none;display:flex;flex-direction:column;
+  justify-content:flex-end;position:relative;overflow:hidden;transition:.25s
+}
+.contact-card:hover{border-color:var(--green);transform:translateY(-5px);background:#0e0d10}
+.contact-card:after{content:"";position:absolute;right:-40px;top:-40px;width:110px;height:110px;border:1px solid rgba(142,101,199,.2);transform:rotate(45deg)}
+.contact-index{position:absolute;top:16px;right:16px;color:#4e4855;font-size:8px;letter-spacing:2px}
+.contact-label{color:var(--green);font-size:8px;letter-spacing:3px;margin-bottom:9px}
+.contact-card strong{font-size:25px;letter-spacing:-1px}
+.contact-card small{color:#6e6875;font-size:9px;margin-top:7px}
+footer{border-top:1px solid #17131c;padding:35px 6vw;display:flex;justify-content:space-between;gap:20px;color:#55505b;font-size:8px;letter-spacing:2px}
+footer b{color:var(--green)}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(12px);z-index:300;display:none;place-items:center;padding:25px}
+.modal.open{display:grid}
+.modal-box{width:min(850px,100%);max-height:90vh;overflow:auto;background:#09090b;border:1px solid var(--purple);position:relative;padding:30px;box-shadow:0 0 0 1px rgba(155,230,45,.1),0 30px 100px #000}
+.close{position:absolute;top:15px;right:15px;background:none;border:1px solid #3a3045;color:var(--green);width:38px;height:38px;font-size:18px}
+.profile{display:grid;grid-template-columns:230px 1fr;gap:30px}.profile-photo{aspect-ratio:1/1;background:#141019;display:grid;place-items:center;overflow:hidden}.profile-photo img{width:100%;height:100%;object-fit:cover;display:block}.profile-photo span{font-size:70px;font-weight:900;color:var(--purple)}.profile-role{font-size:8px;color:var(--green);letter-spacing:3px}.profile h3{font-size:42px;line-height:.9;margin:8px 0 20px}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.fact{border:1px solid #211b29;padding:13px}.fact small{color:#5d5764;font-size:7px;letter-spacing:2px}.fact b{display:block;font-size:11px;margin-top:6px}.tidbit{margin-top:12px;border-left:2px solid var(--green);padding:12px;color:#8b8590;font-size:11px;line-height:1.7}.mal{display:inline-block;margin-top:18px;color:#050505;background:var(--green);padding:11px 15px;text-decoration:none;font-size:9px;font-weight:900;letter-spacing:2px}
+.favourites-section{margin-top:28px;border-top:1px solid #211b29;padding-top:22px}
+.favourites-collage{width:min(100%,600px);margin:0 auto;border:1px solid #30263d;background:#080809;overflow:hidden;line-height:0}
+.favourites-collage img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain}
+.favourites-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.favourites-heading h4{font-size:18px;letter-spacing:1px;text-transform:uppercase}
+.favourites-heading span{font-size:8px;color:var(--green);letter-spacing:2px}
+.favourites-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.favourite-tile{aspect-ratio:1/1;min-width:0;position:relative;overflow:hidden;border:1px solid #30263d;background:linear-gradient(135deg,#17131e,#080809);display:grid;place-items:center}
+.favourite-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.favourite-tile span{position:absolute;inset:0;display:grid;place-items:center;padding:8px;text-align:center;color:#77717e;font-size:9px;letter-spacing:1px;overflow-wrap:anywhere}
+.favourite-tile img:not([src=""])+span{display:none}
+.favourite-tile img[src=""]{display:none}
+@media(max-width:560px){.favourites-heading{display:block}.favourites-heading span{display:block;margin-top:7px}}
+
+
+@media(max-width:850px){
+  nav{display:none}.menu-btn{display:block}
+  .bulletin-wrap,.screening-feature{grid-template-columns:1fr}
+  .core-grid{grid-template-columns:repeat(2,1fr)}.arcade{grid-template-columns:1fr}
+  .timeline-line{left:15px}.timeline-item,.timeline-item.right,.timeline-item.left{width:100%;left:0;padding:0 0 45px 45px;text-align:left}
+  .timeline-item .timeline-dot,.timeline-item.left .timeline-dot,.timeline-item.right .timeline-dot{left:9px;right:auto}
+  .timeline-card{grid-template-columns:95px 1fr}
+  .profile{grid-template-columns:130px 1fr}.profile h3{font-size:30px}
+}
+@media(max-width:560px){
+  .manga-grid{grid-template-columns:repeat(2,1fr)}
+  .manga-cover{height:175px}
+  .manga-cover img{width:115px;height:160px}
+  .recommendation-head{display:block}.recommendation-head p{margin-top:14px}
+  .contact-grid{grid-template-columns:1fr}
+  header{padding:0 18px}.brand-name{font-size:10px}.hero{padding-left:20px;padding-right:20px}
+  section{padding:75px 20px}.section-head{display:block}.section-head p{margin-top:15px}
+  .news-row{grid-template-columns:1fr 1fr}.news-title{grid-column:1/-1}
+  .timeline-card{grid-template-columns:75px 1fr;padding:10px}.timeline-info h4{font-size:15px}
+  .profile{grid-template-columns:1fr}.profile-photo{max-width:180px}.profile-grid{grid-template-columns:1fr}
+  footer{display:block}.logo{width:min(360px,85vw)}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<header>
+  <a class="brand" href="#top">
+    <div class="brand-mark"><img src="assets/logo.png" alt="AMC Anime & Manga Club logo"></div>
+    <div class="brand-name">ANIME & MANGA CLUB<small>NISER // EST. 2026</small></div>
+  </a>
+  <nav>
+    <a href="#bulletin">LIVE FEED</a>
+    <a href="#screenings">CINEMA UNIT</a>
+    <a href="#core">PERSONNEL</a>
+    <a href="#arcade">RECREATION UNIT</a>
+  </nav>
+  <button class="menu-btn" type="button" onclick="document.querySelector('nav').style.display=document.querySelector('nav').style.display==='flex'?'none':'flex'">MENU</button>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <img class="logo" src="assets/logo.png" alt="Anime & Manga Club NISER logo">
+    <div class="kicker">NISER // ANIME & MANGA CLUB // SYSTEM ONLINE</div>
+    <h1>ENTER THE<br><span>ANIME</span> ARCHIVE</h1>
+    <p>A club for anime and manga screenings, discussion and everything in between. Browse the archive, meet the core and find the next screening.</p>
+    <a class="cta" href="pdfs/constitution.pdf" target="_blank" rel="noopener">VIEW CLUB CONSTITUTION <span>↗</span></a>
+  </div>
+</section>
+
+<section id="bulletin">
+  <div class="section-head">
+    <div><div class="eyebrow">01 // LIVE FEED</div><h2>Bulletin</h2></div>
+    <p>Club announcements, event notices and important transmissions.</p>
+  </div>
+  <div class="bulletin-wrap">
+    <div class="bulletin" id="newsList"></div>
+    <div class="status-panel">
+      <div class="status-num">AMC</div>
+      <p>ANIME & MANGA CLUB<br>NATIONAL INSTITUTE OF SCIENCE EDUCATION AND RESEARCH</p>
+      <div class="readout">
+        <div>FOUNDER<b>KANISHK, MANAS</b></div><div>FIC<b>KAUSHIK MAJUMDER</b></div>
+        <div>PRESIDENT<b>KANISHK KAUSHIK</b></div><div>WEBSITE<b>KAUSTAV SARKAR</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="screenings">
+  <div class="section-head">
+    <div><div class="eyebrow">02 // CINEMA UNIT</div><h2>Screenings</h2></div>
+    <p>The next film sits at the front. Follow the connected timeline below to travel through the club's screening history.</p>
+  </div>
+
+  <div class="screening-feature">
+    <div class="poster">
+      <img src="posters/pilot.webp" alt="Anime Pilots poster">
+    </div>
+    <div class="feature-meta">
+      <div class="date">NEXT SCREENING // 17 OCTOBER 2026</div>
+      <h3>ANIME PILOTS</h3>
+      <p class="desc">A demo screening chosen by the core.</p>
+      <div class="meta-line">
+        <div>DATE<b>17 OCT 2026</b></div>
+        <div>VENUE<b>LH5</b></div>
+        <div>STATUS<b class="rating">UPCOMING</b></div>
+      </div>
+      <a class="cta" href="#timeline">VIEW ARCHIVE ↓</a>
+    </div>
+  </div>
+
+  <div class="archive-toggle-wrap">
+    <button class="archive-toggle" id="archiveToggle" type="button" aria-expanded="false" aria-controls="archivePanel">
+      <span class="archive-toggle-icon">+</span>
+      <span><span class="archive-toggle-kicker">SCREENING DATABASE</span> VIEW SCREENING ARCHIVE</span>
+      <span class="archive-toggle-arrow">↓</span>
+    </button>
+  </div>
+
+  <div class="timeline-wrap" id="archivePanel" hidden>
+    <div class="timeline-title">SCREENING TIMELINE // PAST → PRESENT → FUTURE</div>
+    <div class="timeline-line"></div>
+    <div id="timelineItems"></div>
+  </div>
+</section>
+
+<section id="core">
+  <div class="section-head">
+    <div><div class="eyebrow">03 // PERSONNEL</div><h2>The Core</h2></div>
+    <p>Click a core member to open their profile, MyAnimeList link, favourite anime and club-specific tidbits.</p>
+  </div>
+  <div class="core-grid" id="coreGrid"></div>
+</section>
+
+<section id="arcade">
+  <div class="section-head">
+    <div><div class="eyebrow">04 // RECREATION UNIT</div><h2>Arcade</h2></div>
+    <p>Anime quizzes and games for club events, online challenges and screening-night chaos.</p>
+  </div>
+  <div class="arcade">
+    <a class="game-card" href="https://aniquiz.app/" target="_blank" rel="noopener noreferrer">
+      <div class="game-num">GAME 01</div><h3>ANIME<br>QUIZ</h3><p>Test your knowledge across classics, modern hits and obscure club favourites.</p><div class="game-arrow">↗</div>
+    </a>
+    <a class="game-card" href="https://animedle.today/character" target="_blank" rel="noopener noreferrer">
+      <div class="game-num">GAME 02</div><h3>WHO IS<br>THIS?</h3><p>Identify the character from a set of progressively revealing clues.</p><div class="game-arrow">↗</div>
+    </a>
+    <a class="game-card" href="https://www.opguessr.com/" target="_blank" rel="noopener noreferrer">
+      <div class="game-num">GAME 03</div><h3>OPENING<br>LAB</h3><p>Guess the anime from its opening trivia, visual clues or soundtrack challenge.</p><div class="game-arrow">↗</div>
+    </a>
+  </div>
+  <div class="manga-recommendations">
+    <div class="recommendation-head"><div><div class="eyebrow">04A // READING UNIT</div><h3>Manga Recommendations</h3></div><p>Club reading picks. Click a cover to open the corresponding PDF.</p></div>
+    <div class="manga-grid" id="mangaGrid"></div>
+  </div>
+  <div class="manga-recommendations anime-recommendations">
+    <div class="recommendation-head"><div><div class="eyebrow">04B // WATCHING UNIT</div><h3>Anime Recommendations</h3></div><p>Club anime picks. Click a cover to watch on the linked streaming service.</p></div>
+    <div class="manga-grid" id="animeGrid"></div>
+  </div>
+</section>
+</main>
+
+<section class="contact-section" id="contact">
+  <div class="section-head">
+    <div><div class="eyebrow">05 // COMMUNICATIONS</div><h2>Contact AMC</h2></div>
+    <p>Have a question, suggestion, collaboration idea or just something anime-related to say? Reach out through any of the channels below.</p>
+  </div>
+  <div class="contact-grid">
+    <a class="contact-card" href="https://www.instagram.com/amc_niser/" target="_blank" rel="noopener">
+      <span class="contact-index">01</span>
+      <span class="contact-label">SOCIAL NETWORK</span>
+      <strong>INSTAGRAM ↗</strong>
+      <small>@amc_niser</small>
+    </a>
+    <a class="contact-card" href="https://forms.gle/wz3BpdsnVa3eDVFN8" target="_blank" rel="noopener">
+      <span class="contact-index">02</span>
+      <span class="contact-label">QUESTIONS / FEEDBACK</span>
+      <strong>ASK AMC ↗</strong>
+      <small>Google Form</small>
+    </a>
+    <a class="contact-card" href="mailto:amcniser@gmail.com">
+      <span class="contact-index">03</span>
+      <span class="contact-label">DIRECT COMMUNICATION</span>
+      <strong>EMAIL ↗</strong>
+      <small>amcniser@gmail.com</small>
+    </a>
+  </div>
+</section>
+
+<footer><span>MADE BY KAUSTAV SARKAR</span><span><b>© 2026</b> AMC</span></footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="close" type="button" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   AMC WEBSITE EDITING GUIDE
+   ------------------------------------------------------------
+   Keep this entire file together. Put images in /assets or
+   /posters, and PDFs in /pdfs. Change the data below when you
+   want to update screenings, members or recommendations.
+   ============================================================ */
+
+/* ========================= BULLETIN ========================= */
+const news=[
+ {date:"04.10.26",tag:"EVENT",title:"Manga making competition",desc:"During UMANG we will be holding this compitition and people who are reading this can have an early start."},
+ {date:"10.10.26",tag:"SCREENING",title:"No screening this week",desc:"Due to the midsem exams the screening is postponed to next week."},
+ {date:"27.09.26",tag:"CLUB",title:"Request",desc:"Please avoid discussing hentai and ecchi anime/manga in the WhatsApp group."},
+ {date:"04.10.26",tag:"NOTICE",title:"AMC bulletin is online",desc:"The new club website is now active with games, animes and mangas packed in."}
+];
+
+
+/* ========================= SCREENINGS ======================== */
+const screenings=[
+ {side:"left",date:"29.08.26",title:"PAPRIKA",mal:"8.05",rating:"9.0",venue:"LH5",type:"PAST",poster:"posters/paprika.webp"},
+ {side:"right",date:"05.09.26",title:"WITCH HAT ATELIER (EP 1-6)",mal:"8.47",rating:"8.0",venue:"LH5",type:"PAST",poster:"posters/wha1.webp"},
+ {side:"left",date:"12.09.26",title:"WITCH HAT ATELIER (EP 7-13)",mal:"8.47",rating:"8.0",venue:"LH4",type:"PAST",poster:"posters/wha2.webp"},
+ {side:"right",date:"03.10.26",title:"REDLINE",mal:"8.29",rating:"8.0",venue:"LH5",type:"PAST",poster:"posters/redline.webp"},
+ {side:"left",date:"17.10.26",title:"ANIME PILOTS",mal:"—",rating:"—",venue:"LH5",type:"NEXT",poster:"posters/pilot.webp"},
+ {side:"right",date:"24.10.26",title:"UNKNOWN",rating:"—",mal:"—",venue:"LH5",type:"UPCOMING",poster:"posters/ghost-in-the-shell.jpg"},
+ {side:"left",date:"31.10.26",title:"UNKNOWN",mal:"8.0",rating:"—",venue:"LH5",type:"UPCOMING",poster:"posters/millennium-actress.jpg"}
+];
+
+
+/* ========================= THE CORE ========================== */
+const members=[
+ {name:"KANISHK KAUSHIK",role:"PRESIDENT",initial:"01",photo:"assets/core1.jpg",collage:"assets/favourites/core1-3x3.jpg",anime:"Orb: On the Movements of the Earth",manga:"Chainsaw Man",character:"Shigeo Kageyama (Mob Psycho 100)",tidbit:"Thinks anime is cartoon.",mal:"https://myanimelist.net/"},
+ {name:"MANAS SINGH",role:"VICE-PRESIDENT",initial:"02",photo:"assets/core2.jpg",collage:"assets/favourites/core2-3x3.jpg",anime:"JoJo's Bizarre Adventures",manga:"Chainsaw Man",character:"Roy Mustang (Fullmetal Alchemist)",tidbit:"Doesn't even watch anime.",mal:"https://myanimelist.net/"},
+ {name:"KAUSTAV SARKAR",role:"CREATIVE HEAD",initial:"03",photo:"assets/core3.jpg",collage:"assets/favourites/core3-3x3.jpg",anime:"Neon Genesis Evangelion",manga:"Tokyo Ghoul",character:"Link (The Legend of Zelda)",tidbit:"All roads lead to eva for him.",mal:"https://myanimelist.net/profile/Kaustav1199"},
+ {name:"KRITIKA CHAUHAN",role:"EVENT COORDINATOR",initial:"04",photo:"assets/core4.jpg",collage:"assets/favourites/core4-3x3.jpg",anime:"Cosmic Princess Kaguya",manga:"DanDaDan",character:"Maomao (The Apothecary Diaries)",tidbit:"Thinks every male friendship is potential yaoi.",mal:"https://myanimelist.net/"},
+ {name:"JAIVARDHAN PANDEY",role:"MEDIA HEAD",initial:"05",photo:"assets/core5.jpg",collage:"assets/favourites/core5-3x3.jpg",anime:"Hyouka",manga:"20th Century Boys",character:"Canute (Vinland Saga)",tidbit:"Biggest larper of the core.",mal:"https://myanimelist.net/"}
+];
+
+
+/* ====================== RECOMMENDATIONS ====================== */
+const mangaRecommendations=[{title:"One-Armed Amy",pdf:"pdfs/oaa.pdf",cover:"posters/oaa.webp"},{title:"Look Back",pdf:"pdfs/lb.pdf",cover:"posters/lb.webp"},{title:"Goodbye, Eri",pdf:"pdfs/ge.pdf",cover:"posters/ge.webp"},{title:"Just Listen to the Song",pdf:"pdfs/jls.pdf",cover:"posters/jls.webp"}];
+const animeRecommendations=[{title:"Neon Genesis Evangelion",stream:"https://reanime.to/anime/neon-genesis-evangelion-4qrtz9",cover:"posters/nge.webp"},{title:"Concentrated Bleach",stream:"https://linktr.ee/gabby5202",cover:"posters/cb.webp"},{title:"One Pace",stream:"https://onepace.net/en/watch",cover:"posters/op.webp"},{title:"Cyberpunk Edgerunners",stream:"https://reanime.to/anime/cyberpunk-edgerunners-z69v5g",cover:"posters/ce.webp"}];
+
+/* ====================== PAGE RENDERING ======================== */
+
+const archiveToggle=document.getElementById("archiveToggle");
+const archivePanel=document.getElementById("archivePanel");
+archiveToggle.addEventListener("click",()=>{
+  const isOpen=archiveToggle.getAttribute("aria-expanded")==="true";
+  archiveToggle.setAttribute("aria-expanded",String(!isOpen));
+  archivePanel.hidden=isOpen;
+  archiveToggle.querySelector(".archive-toggle-icon").textContent=isOpen?"+":"−";
+});
+
+document.getElementById("newsList").innerHTML=news.map(n=>`
+  <article class="news-row"><div class="news-date">${n.date}</div><span class="tag">${n.tag}</span>
+  <div class="news-title">${n.title}<small>${n.desc}</small></div></article>`).join("");
+
+document.getElementById("timelineItems").innerHTML=screenings.map((s,i)=>`
+  <article class="timeline-item ${s.side} ${s.type==='NEXT'?'future':''}">
+    <div class="timeline-dot"></div>
+    <div class="timeline-card" onclick="openScreening(${i})">
+      <div class="mini-poster">${s.poster ? `<img src="${s.poster}" alt="${s.title} poster">` : `<span>POSTER<br>PLACEHOLDER</span>`}</div>
+      <div class="timeline-info">
+        ${s.type!=="PAST"?`<div class="future-label">${s.type}</div>`:""}
+        <div class="year">${s.date}</div><h4>${s.title}</h4>
+        <p>${s.type==="PAST"?"Audience rating from screening attendees.":"Upcoming screening — rating will appear after the event."}</p>
+        <div class="stars">${s.rating==="—"?"COMING SOON":"★ "+s.rating+" / 10"}</div>
+      </div>
+    </div>
+  </article>`).join("");
+
+document.getElementById("coreGrid").innerHTML=members.map((m,i)=>`
+  <article class="core-card" onclick="openMember(${i})">
+    <span class="core-index">0${i+1}</span><div class="core-photo">${m.photo ? `<img src="${m.photo}" alt="${m.name}" loading="lazy">` : `<span class="core-initial">${m.initial}</span>`}</div>
+    <div class="core-info"><h3>${m.name}</h3><p>${m.role}</p></div>
+  </article>`).join("");
+
+document.getElementById("mangaGrid").innerHTML=mangaRecommendations.map(m=>`<a class="manga-card" href="${m.pdf}" target="_blank" rel="noopener"><div class="manga-cover">${m.cover?`<img src="${m.cover}" alt="${m.title} cover">`:`<span>COVER ART</span>`}</div><div class="manga-info"><h4>${m.title}</h4></div><div class="manga-arrow">↗</div></a>`).join("");
+document.getElementById("animeGrid").innerHTML=animeRecommendations.map(a=>`<a class="manga-card" href="${a.stream}" target="_blank" rel="noopener"><div class="manga-cover">${a.cover?`<img src="${a.cover}" alt="${a.title} cover">`:`<span>COVER ART</span>`}</div><div class="manga-info"><h4>${a.title}</h4></div><div class="manga-arrow">↗</div></a>`).join("");
+
+/* ========================= MODALS ============================ */
+
+function openMember(i){
+ const m=members[i];
+ document.getElementById("modalContent").innerHTML=`
+ <div class="profile"><div class="profile-photo"><img src="${m.collage}" alt="${m.name} anime and manga favourites collage" onerror="this.onerror=null;this.src='${m.photo}';this.alt='${m.name} profile photo'"></div><div>
+ <div class="profile-role">${m.role}</div><h3>${m.name}</h3>
+ <div class="profile-grid"><div class="fact"><small>FAVOURITE ANIME</small><b>${m.anime}</b></div>
+ <div class="fact"><small>FAVOURITE MANGA</small><b>${m.manga}</b></div>
+ <div class="fact"><small>FAVOURITE CHARACTER</small><b>${m.character}</b></div>
+ <div class="fact"><small>AMC ID</small><b>CORE-${String(i+1).padStart(2,"0")}</b></div></div>
+ <div class="tidbit">${m.tidbit}</div><a class="mal" href="${m.mal}" target="_blank" rel="noopener">MYANIMELIST ↗</a>
+ </div></div>`;
+ openModal();
+}
+function openScreening(i){
+ const s=screenings[i];
+ document.getElementById("modalContent").innerHTML=`
+ <div class="profile">
+   <div class="profile-photo">
+     ${s.poster ? `<img src="${s.poster}" alt="${s.title} poster">` : `<span>POSTER</span>`}
+   </div>
+   <div>
+     <div class="profile-role">${s.type} SCREENING</div><h3>${s.title}</h3>
+     <div class="profile-grid">
+       <div class="fact"><small>DATE</small><b>${s.date}</b></div>
+       <div class="fact"><small>RATING</small><b>${s.rating==="—"?"PENDING":"★ "+s.rating+" / 10"}</b></div>
+       <div class="fact"><small>MAL RATING</small><b>${s.rating==="—"?"PENDING":"★ "+s.mal+" / 10"}</b></div>
+       <div class="fact"><small>VENUE</small><b>${s.venue || "TBD"}</b></div>
+     </div>
+     <div class="tidbit">${s.type==="PAST"?"For more detais ask the core, idk why would anyone ask though.":"This screening is upcoming. Add the final venue, time and poster here."}</div>
+   </div>
+ </div>`;
+ openModal();
+}
+function openModal(){document.getElementById("modal").classList.add("open");document.body.style.overflow="hidden"}
+function closeModal(){document.getElementById("modal").classList.remove("open");document.body.style.overflow=""}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+</script>
+</body>
+</html>
